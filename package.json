@@ -1,0 +1,37 @@
+{
+  "name": "phlip-doc-management",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "description": "This repository holds the code that are APIs for the document management part of the PHLIP project.",
+  "scripts": {
+    "build:docker": "docker build -t node:with-uno -f Dockerfile-java .",
+    "start": "docker-compose up --build",
+    "serve": "docker-compose -f docker-compose.prod.yml up --build",
+    "start:local": "nodemon scripts/serve.js",
+    "serve:local": "node scripts/serve.js"
+  },
+  "author": "Kristin Muterspaw",
+  "dependencies": {
+    "archiver": "3.0.3",
+    "body-parser": "1.18.3",
+    "cors": "2.8.4",
+    "dotenv": "6.0.0",
+    "exceljs": "1.6.2",
+    "express": "4.16.3",
+    "express-jwt": "5.3.1",
+    "jsonwebtoken": "8.3.0",
+    "mongoose": "5.8.10",
+    "multer": "1.3.1",
+    "nodemon": "1.18.7",
+    "winston": "3.2.1"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "chai-http": "4.2.1",
+    "mocha": "5.2.0",
+    "nock": "10.0.1",
+    "sinon": "7.0.0",
+    "sinon-mongoose": "2.2.1",
+    "swagger-ui-express": "4.0.7"
+  }
+}

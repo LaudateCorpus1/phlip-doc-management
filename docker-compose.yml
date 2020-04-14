@@ -1,0 +1,24 @@
+version: "3.2"
+volumes:
+  doc-manage-mongo-db:
+services:
+  api:
+    container_name: doc-manage
+    image: doc-manage
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - /usr/src/app/node_modules/
+      - .:/usr/src/app
+    ports:
+      - ${APP_PORT:-3000}:${APP_PORT:-3000}
+    links:
+      - mongo:mongo
+  mongo:
+    container_name: doc-manage-mongo
+    image: mongo:latest
+    volumes:
+      - doc-manage-mongo-db:/data/db

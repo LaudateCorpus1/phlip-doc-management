@@ -1,0 +1,5 @@
+FROM openjdk:8-stretch
+
+RUN wget https://deb.nodesource.com/setup_12.x && chmod +x ./setup_12.x && ./setup_12.x && apt-get install -y nodejs
+RUN apt-get install -y qpdf
+RUN apt-get install -y unoconv

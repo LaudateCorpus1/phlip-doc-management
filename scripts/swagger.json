@@ -1,0 +1,757 @@
+{
+  "openapi": "3.0.1",
+  "basePath": "/api",
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local development server"
+    }
+  ],
+  "info": {
+    "title": "Document Management",
+    "version": "1.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "in": "header",
+        "name": "Authorization",
+        "description": "A JWT created using the same secret that is specified in the .env file."
+      }
+    },
+    "schemas": {
+      "Document": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "required": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "uploadedBy": {
+            "type": "object"
+          },
+          "uploadedDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "citation": {
+            "type": "string"
+          },
+          "lastModifiedDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projects": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "jurisdictions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Approved",
+              "Draft"
+            ],
+            "default": "Draft"
+          }
+        }
+      },
+      "DocumentWithoutContent": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "required": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "uploadedBy": {
+            "type": "object"
+          },
+          "uploadedDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "citation": {
+            "type": "string"
+          },
+          "lastModifiedDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projects": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "jurisdictions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Approved",
+              "Draft"
+            ],
+            "default": "Draft"
+          }
+        }
+      },
+      "annotation": {
+        "type": "object",
+        "properties": {
+          "startPage": {
+            "type": "integer",
+            "description": "The starting page of the annotation"
+          },
+          "endPage": {
+            "type": "integer",
+            "description": "The ending page of the annotation"
+          },
+          "rects": {
+            "type": "array",
+            "description": "An array of rectangle coordinators that make up the annotations",
+            "items": {
+              "type": "object",
+              "properties": {
+                "pageNumber": {
+                  "type": "integer",
+                  "description": "The page number of the document on which this rectangle resides"
+                },
+                "pdfPoints": {
+                  "type": "object",
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "description": "The top left x coordinate for the rectangle"
+                    },
+                    "y": {
+                      "type": "number",
+                      "description": "The top left y coordinate for the rectangle"
+                    },
+                    "endX": {
+                      "type": "number",
+                      "description": "The bottom right x coordinate for the rectangle"
+                    },
+                    "endY": {
+                      "type": "number",
+                      "description": "The bottom right y coordinate for the rectangle"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "docId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "The _id that matches the _id of a document in MongoDB.",
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "paths": {
+    "/docs": {
+      "get": {
+        "summary": "Get all documents",
+        "parameters": [
+          {
+            "name": "projects[]",
+            "description": "A list of projects ids that the calling user has access to.",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of all documents without the content property in MongoDB. If projects is supplied in query, then only documents that match those project ids will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentWithoutContent"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/{id}": {
+      "put": {
+        "summary": "Update a document",
+        "operationId": "getDocument",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/docId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentWithoutContent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentWithoutContent"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Deletes a document",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/docId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A message saying document was deleted, and id of document deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/{id}/contents": {
+      "get": {
+        "summary": "Retrieve the file contents for a document",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/docId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The document with the file contents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "The contents of the file, in buffer format"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "description": "The MongoDB _id of the document whose contents were retrieved"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/projects/{projectId}/jurisdictions/{jurisdictionId}": {
+      "get": {
+        "summary": "Get the approved documents for a project and jurisdiction",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "description": "A project id from the Projects Backend to use to match documents",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "jurisdictionId",
+            "in": "path",
+            "required": true,
+            "description": "A jurisdiction id from the Project Backend to use to match documents",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An list of documents where their projects property contains the projectId parameter, and their jurisdictions property contains the jurisdictionId parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentWithoutContent"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/upload/extractInfo": {
+      "post": {
+        "summary": "Extract the information in an Excel file",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "required": true,
+                    "description": "An excel file to extract data from",
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The extracted metadata from the Excel, where the keys are the names of the files extracted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/upload": {
+      "post": {
+        "summary": "Upload a set of documents, up to 50",
+        "operationId": "Upload documents",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "description": "The id of the user who uploaded the documents"
+                  },
+                  "userFirstName": {
+                    "type": "string",
+                    "description": "The first name of the user who uploaded the documents"
+                  },
+                  "userLastName": {
+                    "type": "string",
+                    "description": "The last name of the user who uploaded the documents"
+                  },
+                  "metadata": {
+                    "required": true,
+                    "type": "string",
+                    "description": "This is a stringified object of { [doc.name]: { jurisdictions, projects, tags, citation, lastModifiedDate, effectiveDate } }"
+                  },
+                  "files": {
+                    "required": true,
+                    "description": "An array of files to upload",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A list of the documents uploaded, after being converted to PDF (if needed) and stored in MongoDB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "files": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DocumentWithoutContent"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "links": {
+              "GetDocumentById": {
+                "operationId": "getDocument",
+                "parameters": {
+                  "id": "$response.body#/files/1/_id"
+                },
+                "description": "The _id field can be used in all routes that have the {id} parameter."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/{id}/download": {
+      "post": {
+        "summary": "Download one document with annotations, if applicable",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/docId"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "annotations": {
+                    "description": "An array of annotations to add to the document",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/annotation"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The document contents with the annotations added, if any",
+            "content": {
+              "arraybuffer": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/download": {
+      "post": {
+        "summary": "Download a Zip of documents with annotations, if applicable",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "docs": {
+                    "required": true,
+                    "description": "A list of documents to download",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "required": true,
+                          "description": "The _id in MongoDB of the document to download"
+                        },
+                        "annotations": {
+                          "description": "An array of annotations to add to the document, can be empty",
+                          "type": "array",
+                          "required": true,
+                          "items": {
+                            "$ref": "#/components/schemas/annotation"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A Zip file of all documents with the annotations added, if any",
+            "content": {
+              "arraybuffer": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/{id}/{updateType}/{removeId}": {
+      "delete": {
+        "description": "Removes a project or jurisdiction id from those array properties, respectively",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/docId"
+          },
+          {
+            "name": "updateType",
+            "in": "path",
+            "required": true,
+            "description": "The property in the Document from which to remove the :removeId parameter",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "projects",
+                "jurisdictions"
+              ]
+            }
+          },
+          {
+            "name": "removeId",
+            "in": "path",
+            "required": true,
+            "description": "The id to remove from the array property specified at :updateType",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns 200 on success"
+          }
+        }
+      }
+    },
+    "/docs/{id}/{updateType}/{newId}": {
+      "post": {
+        "description": "Adds a new ID to the project or jurisdiction array for a document",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/docId"
+          },
+          {
+            "name": "updateType",
+            "in": "path",
+            "required": true,
+            "description": "The property in the Document from which to add the :newId parameter",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "projects",
+                "jurisdictions"
+              ]
+            }
+          },
+          {
+            "name": "newId",
+            "in": "path",
+            "required": true,
+            "description": "The id to add to the the array property specified at :updateType",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns 200 on success"
+          }
+        }
+      }
+    },
+    "/docs/bulkDelete": {
+      "post": {
+        "description": "Deletes a collection of documents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "docIds": {
+                    "description": "A list of _ids of documents that should be deleted",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The result object from the MongoDB call"
+          }
+        }
+      }
+    },
+    "/docs/bulkUpdate": {
+      "post": {
+        "description": "Update a collection of documents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "meta": {
+                    "type": "object",
+                    "properties": {
+                      "updateType": {
+                        "description": "The property to update",
+                        "type": "string",
+                        "enum": [
+                          "status",
+                          "jurisdictions",
+                          "projects"
+                        ]
+                      },
+                      "newData": {
+                        "description": "The new property value",
+                        "type": "string"
+                      },
+                      "updateProJur": {
+                        "description": "Only populated if the updateType is projects or jurisdictions. The new id to add",
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "docIds": {
+                    "description": "A list of _ids of documents that should be deleted",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The result object from the MongoDB call"
+          }
+        }
+      }
+    },
+    "/docs/cleanProjectList/{projectId}": {
+      "put": {
+        "description": "Removes the project id from the specified list of documents or from all documents",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "description": "The project id to remove",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "docIds": {
+                    "description": "A list of _ids of documents that should be deleted",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The result object from the MongoDB call"
+          }
+        }
+      }
+    }
+  }
+}

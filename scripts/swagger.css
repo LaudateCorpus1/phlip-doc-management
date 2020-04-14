@@ -1,0 +1,60 @@
+.swagger-ui .renderedMarkdown p {
+    margin: 0 0 5px 0;
+}
+
+.swagger-ui table tbody tr td:first-of-type {
+    padding: 15px 0;
+}
+
+.swagger-ui .response-col_status {
+    padding: 10px 0 !important;
+}
+
+.swagger-ui .opblock-description-wrapper p {
+    font-size: 15px;
+}
+
+.swagger-ui table.model tr {
+    display: flex;
+    align-items: center;
+    min-height: 20px;
+}
+
+input {
+    outline: none;
+}
+
+.swagger-ui textarea, .swagger-ui .opblock-body pre {
+    font-weight: normal;
+}
+
+.swagger-ui .json-schema-form-item > button {
+    margin-left: 5px;
+}
+
+.swagger-ui table.model tbody tr td {
+    max-width: unset;
+}
+
+.swagger-ui .model {
+    font-weight: normal;
+    font-size: 13px;
+}
+
+.swagger-ui .model-box {
+    display: flex;
+    align-items: center;
+}
+
+.swagger-ui .model-box .model {
+    flex: auto;
+}
+
+.swagger-ui .model-toggle {
+    position: unset;
+    top: 0
+}
+
+.swagger-ui .parameters-col_description {
+    padding: 15px;
+}
