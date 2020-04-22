@@ -1,0 +1,9 @@
+Dockerfile
+Dockerfile-java
+Dockerfile-prod
+*.log
+docker-compose.be.yml
+docker-compose.yml
+node_modules
+.env
+.idea/
