@@ -16,7 +16,7 @@
     "body-parser": "1.18.3",
     "cors": "2.8.4",
     "dotenv": "6.0.0",
-    "exceljs": "1.6.2",
+    "exceljs": "1.15.0",
     "express": "4.16.3",
     "express-jwt": "5.3.1",
     "jsonwebtoken": "8.3.0",
